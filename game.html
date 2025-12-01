@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Game Proses Legislasi SMP - 10 Pertanyaan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: linear-gradient(120deg, #fddb92, #d1fdff);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    margin: 0; padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  #game-container {
+    background: #fffef8cc;
+    padding: 25px 35px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    width: 440px;
+    max-width: 95vw;
+    text-align: center;
+    margin-top: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  h1 {
+    color: #ff5722;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px #bf360c;
+  }
+  #question {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #bf360c;
+    min-height: 80px;
+    transition: opacity 0.6s ease;
+  }
+  #image-container {
+    height: 190px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+  }
+  #image-container img {
+    max-height: 100%;
+    max-width: 100%;
+    border-radius: 20px;
+    transition: transform 0.8s ease;
+  }
+  .option-btn {
+    display: block;
+    background-color: #ffab40;
+    border: 3px solid #ff6f00;
+    padding: 16px 30px;
+    margin: 14px 0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.25s cubic-bezier(0.25, 1.25, 0.5, 1);
+    color: #5d4037;
+    font-weight: 800;
+    font-size: 1.15rem;
+    box-shadow: 2px 4px 10px #db7c00;
+    user-select: none;
+  }
+  .option-btn:hover:not(:disabled) {
+    background-color: #ff6f00;
+    color: white;
+    border-color: #bf360c;
+    transform: scale(1.07);
+    box-shadow: 4px 6px 16px #bf360c;
+  }
+  .option-btn:disabled {
+    cursor: default;
+    opacity: 0.8;
+  }
+  .correct {
+    background-color: #81c784 !important;
+    border-color: #388e3c !important;
+    color: #1b5e20 !important;
+    box-shadow: 0px 0px 18px 5px #388e3c;
+    transform: scale(1.05);
+  }
+  .wrong {
+    background-color: #ef9a9a !important;
+    border-color: #d32f2f !important;
+    color: #b71c1c !important;
+    box-shadow: 0px 0px 18px 5px #d32f2f;
+    transform: scale(1.05);
+  }
+  #progress-bar {
+    height: 16px;
+    background: #ffecb3;
+    border-radius: 30px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.2);
+  }
+  #progress {
+    height: 100%;
+    width: 0%;
+    background-color: #ff6f00;
+    transition: width 0.6s ease;
+    border-radius: 30px;
+  }
+  #score-container {
+    font-size: 1.5rem;
+    margin-top: 25px;
+    color: #bf360c;
+    font-weight: 700;
+  }
+  #next-btn {
+    margin-top: 22px;
+    padding: 14px 36px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    background-color: #ff5722;
+    border: none;
+    border-radius: 22px;
+    cursor: pointer;
+    display: none;
+    box-shadow: 0 5px 20px rgba(255, 87, 34, 0.9);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  #next-btn:hover {
+    background-color: #bf360c;
+    box-shadow: 0 7px 28px rgba(191, 54, 12, 1);
+  }
+  /* POPUP STYLE */
+  #popup {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right:0; bottom:0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.7s ease forwards;
+  }
+  #popup.hide {
+    animation: fadeOut 0.5s ease forwards;
+  }
+  #popup-content {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 35px rgba(0,0,0,0.6);
+    padding: 30px 40px;
+    max-width: 400px;
+    text-align: center;
+    color: #444;
+    font-weight: 600;
+    transform: translateY(-30px);
+    animation: slideIn 0.7s cubic-bezier(0.7,1.7,0.7,1.3) forwards;
+  }
+  #popup-content p {
+    margin-bottom: 28px;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    color: #3e2723;
+  }
+  #popup-btn {
+    background-color: #ff5722;
+    border: none;
+    color: white;
+    padding: 14px 34px;
+    font-size: 1.25rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 5px 20px rgba(255, 87, 34, 0.9);
+    transition: background-color 0.25s ease;
+    user-select: none;
+  }
+  #popup-btn:hover {
+    background-color: #bf360c;
+  }
+  /* Animations */
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  @keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+  }
+  @keyframes slideIn {
+    from {transform: translateY(-30px) scale(0.85); opacity: 0;}
+    to {transform: translateY(0) scale(1); opacity: 1;}
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <h1>Game Proses Legislasi SMP</h1>
+  <div id="progress-bar"><div id="progress"></div></div>
+  <div id="image-container"><img src="" alt="Ilustrasi Proses Legislasi" id="illustration"></div>
+  <div id="question">Memuat pertanyaan ...</div>
+  <div id="options-container"></div>
+  <button id="next-btn">Soal Berikutnya</button>
+  <div id="score-container"></div>
+</div>
+
+<!-- POPUP -->
+<div id="popup">
+  <div id="popup-content">
+    <p id="popup-text"></p>
+    <button id="popup-btn">Lanjutkan</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      question: "Apa tahapan pertama dalam proses legislasi?",
+      options: ["Pembahasan di DPR", "Penyusunan RUU", "Pengesahan Presiden", "Pengumuman kepada publik"],
+      answer: "Penyusunan RUU",
+      image: "https://i.imgur.com/XLbNrT5.png",
+      explanation: "Tahap pertama adalah penyusunan rancangan undang-undang oleh DPR atau pemerintah."
+    },
+    {
+      question: "Siapa yang menyusun Rancangan Undang-Undang (RUU)?",
+      options: ["Presiden", "DPR", "Mahkamah Konstitusi", "Masyarakat"],
+      answer: "DPR",
+      image: "https://i.imgur.com/K3zHzTb.png",
+      explanation: "RUU disusun oleh anggota DPR yang mewakili rakyat."
+    },
+    {
+      question: "Setelah DPR menyetujui RUU, tahap berikutnya adalah?",
+      options: ["Pengesahan Presiden", "Pembacaan pertama", "Sidang pleno MPR", "Putusan Mahkamah"],
+      answer: "Pengesahan Presiden",
+      image: "https://i.imgur.com/LUy0Yns.png",
+      explanation: "RUU diajukan kepada Presiden untuk disahkan agar jadi UU."
+    },
+    {
+      question: "Apa yang terjadi jika Presiden menolak RUU?",
+      options: ["RUU batal", "RUU direvisi dan dibahas ulang", "Langsung jadi UU", "DPR dibubarkan"],
+      answer: "RUU direvisi dan dibahas ulang",
+      image: "https://i.imgur.com/1cmmIT0.png",
+      explanation: "RUU yang ditolak Presiden akan dibahas ulang di DPR."
+    },
+    {
+      question: "Setelah disahkan Presiden, RUU berubah menjadi?",
+      options: ["PGRS", "Peraturan Daerah", "Undang-Undang", "Keputusan DPR"],
+      answer: "Undang-Undang",
+      image: "https://i.imgur.com/M59rcV0.png",
+      explanation: "RUU yang sudah disahkan Presiden menjadi Undang-Undang."
+    },
+    {
+      question: "Siapa yang menandatangani Undang-Undang agar resmi berlaku?",
+      options: ["Ketua DPR", "Presiden", "Mahkamah Agung", "Menteri Hukum dan HAM"],
+      answer: "Presiden",
+      image: "https://i.imgur.com/DvF6fWQ.png",
+      explanation: "Presiden yang menandatangani UU agar resmi berlaku."
+    },
+    {
+      question: "Apa fungsi Mahkamah Konstitusi terkait UU?",
+      options: ["Mengesahkan UU", "Menguji UU terhadap UUD", "Membuat UU", "Melaksanakan UU"],
+      answer: "Menguji UU terhadap UUD",
+      image: "https://i.imgur.com/YJXrFnc.png",
+      explanation: "Mahkamah Konstitusi menguji apakah UU sesuai dengan konstitusi."
+    },
+    {
+      question: "Berapa lama masa pembahasan umum RUU di DPR?",
+      options: ["1 bulan", "6 bulan", "3 bulan", "1 tahun"],
+      answer: "6 bulan",
+      image: "https://i.imgur.com/m1RwvgR.png",
+      explanation: "Masa pembahasan umum RUU biasanya sekitar 6 bulan."
+    },
+    {
+      question: "Apa tujuan utama proses legislasi?",
+      options: ["Membuat aturan baru", "Membubarkan DPR", "Mendiskusikan hukum lama", "Membuat RUU batal"],
+      answer: "Membuat aturan baru",
+      image: "https://i.imgur.com/ovdwyVl.png",
+      explanation: "Proses legislasi bertujuan membuat aturan dan UU baru."
+    },
+    {
+      question: "Bagaimana jika terjadi persetujuan bersama dalam DPR?",
+      options: ["RUU langsung UU", "Lanjut ke Presiden", "Dibatalkan", "Masuk Mahkamah"],
+      answer: "Lanjut ke Presiden",
+      image: "https://i.imgur.com/LUy0Yns.png",
+      explanation: "Jika disetujui DPR, RUU diajukan ke Presiden untuk pengesahan."
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+  const totalQuestions = questions.length;
+
+  const questionEl = document.getElementById('question');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+  const scoreContainer = document.getElementById('score-container');
+  const progressBar = document.getElementById('progress');
+  const illustration = document.getElementById('illustration');
+  const popup = document.getElementById('popup');
+  const popupText = document.getElementById('popup-text');
+  const popupBtn = document.getElementById('popup-btn');
+
+  function fadeOut(element, callback) {
+    element.style.opacity = 0;
+    setTimeout(() => {
+      callback();
+      fadeIn(element);
+    }, 600);
+  }
+  function fadeIn(element) {
+    element.style.opacity = 1;
+  }
+
+  function loadQuestion() {
+    fadeOut(questionEl, () => {
+      clearState();
+      let q = questions[currentQuestionIndex];
+      questionEl.textContent = q.question;
+
+      illustration.style.opacity = 0;
+      illustration.src = q.image;
+      setTimeout(() => {
+        fadeIn(illustration);
+        illustration.style.transform = "scale(1.05)";
+        setTimeout(() => illustration.style.transform = "scale(1)", 400);
+      }, 100);
+
+      q.options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.classList.add('option-btn');
+        button.onclick = selectAnswer;
+        optionsContainer.appendChild(button);
+      });
+
+      updateProgress();
+    });
+  }
+
+  function clearState() {
+    nextBtn.style.display = 'none';
+    scoreContainer.textContent = '';
+    while(optionsContainer.firstChild){
+      optionsContainer.removeChild(optionsContainer.firstChild);
+    }
+  }
+
+  function selectAnswer(e) {
+    const selectedBtn = e.target;
+    const answer = questions[currentQuestionIndex].answer;
+    const isCorrect = selectedBtn.textContent === answer;
+
+    if (isCorrect) {
+      selectedBtn.classList.add('correct');
+      score++;
+    } else {
+      selectedBtn.classList.add('wrong');
+      Array.from(optionsContainer.children).forEach(button => {
+        if(button.textContent === answer){
+          button.classList.add('correct');
+        }
+      });
+    }
+
+    Array.from(optionsContainer.children).forEach(button => {
+      button.disabled = true;
+    });
+
+    // Show pop-up with explanation smoothly
+    popupText.textContent = questions[currentQuestionIndex].explanation;
+    popup.classList.remove('hide');
+    popup.style.display = "flex";
+  }
+
+  popupBtn.onclick = () => {
+    popup.classList.add('hide');
+    setTimeout(() => {
+      popup.style.display = "none";
+      currentQuestionIndex++;
+      if(currentQuestionIndex < totalQuestions){
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    }, 500);
+  };
+
+  function updateProgress() {
+    const progressPercent = ((currentQuestionIndex) / totalQuestions) * 100;
+    progressBar.style.width = progressPercent + '%';
+  }
+
+  function showScore() {
+    clearState();
+    fadeOut(questionEl, () => {
+      questionEl.textContent = "Game selesai!";
+      scoreContainer.textContent = `Skor Anda: ${score} dari ${totalQuestions}`;
+      updateProgress();
+      progressBar.style.width = '100%';
+      illustration.style.opacity = 1;
+      illustration.style.transform = "scale(1)";
+      illustration.src = "https://i.imgur.com/tOPBdoz.png";
+      fadeIn(questionEl);
+    });
+  }
+
+  // Initialize opacity to 1 for fade in/out effects
+  questionEl.style.opacity = 1;
+  illustration.style.opacity = 1;
+
+  loadQuestion();
+</script>
+</body>
+</html>
